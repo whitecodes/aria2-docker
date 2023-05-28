@@ -4,10 +4,10 @@
 }
 
 :8080 
-reverse_proxy /jsonrpc 127.0.0.1:6800
-reverse_proxy /rpc 127.0.0.1:6800
+reverse_proxy /jsonrpc 127.0.0.1:6845
+reverse_proxy /rpc 127.0.0.1:6845
 
-root * /usr/local/www/ariang
+root * /usr/local/www/ariang/master
 file_server
 encode gzip
 
