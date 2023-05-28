@@ -4,8 +4,7 @@
 }
 
 :8080 
-reverse_proxy /jsonrpc 127.0.0.1:6845
-reverse_proxy /rpc 127.0.0.1:6845
+
 
 root * /usr/local/www/ariang/yaaw-master
 file_server
