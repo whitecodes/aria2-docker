@@ -22,4 +22,5 @@ fi
 # chown -R "$userid":"$groupid" $data_path
 
 caddy start -config /usr/local/caddy/Caddyfile -adapter=caddyfile
+cat $conf_path/aria2.conf
 aria2c "$@"
