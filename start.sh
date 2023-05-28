@@ -18,8 +18,8 @@ if [[ -n "$PUID" && -n "$PGID" ]]; then
     groupid=$PGID
 fi
 
-chown -R "$userid":"$groupid" $conf_path
-chown -R "$userid":"$groupid" $data_path
+# chown -R "$userid":"$groupid" $conf_path
+# chown -R "$userid":"$groupid" $data_path
 
 caddy start -config /usr/local/caddy/Caddyfile -adapter=caddyfile
-su-exec "$userid":"$groupid" aria2c "$@"
+su-exec aria2c --conf-path=$conf_path/aria2.conf
