@@ -1,13 +1,11 @@
 FROM alpine:3.16.0
 
-ARG 1.3.6
-ARG `date -u +"%Y-%m-%dT%H:%M:%SZ"`
-ARG ${GITHUB_SHA::7}
+ARG ARIANG_VERSION 
+ARG VCS_REF
 
 ENV ARIA2RPCPORT=8080
 
 LABEL maintainer="hurlenko" \
-    org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.name="aria2-ariang" \
     org.label-schema.description="Aria2 downloader and AriaNg webui Docker image based on Alpine Linux" \
     org.label-schema.version=$ARIANG_VERSION \
