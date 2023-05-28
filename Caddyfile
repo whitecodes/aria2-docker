@@ -3,13 +3,11 @@
   auto_https off
 }
 
-:8080 
-
-
-root * /usr/local/www/ariang/yaaw-master
-file_server
-encode gzip
-
+:8080 {
+  root * /usr/local/www/ariang/yaaw-master
+  file_server
+  encode gzip
+}
 log {
   level warn
 }
