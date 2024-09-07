@@ -21,5 +21,5 @@ fi
 # chown -R "$userid":"$groupid" $conf_path
 # chown -R "$userid":"$groupid" $data_path
 
-caddy start -config /usr/local/caddy/Caddyfile -adapter=caddyfile
+caddy start --config /usr/local/caddy/Caddyfile -adapter=caddyfile
 aria2c "$@"
