@@ -40,5 +40,8 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          # 保留 metadata-action 生成的 tags，并额外添加两个每次唯一的 tag：
+          # 1) commit SHA (完整 SHA，可改为短 SHA 如果需要)
+          # 2) run-id（确保每次 workflow 运行都有唯一 tag）
+          tags: ${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:run-${{ github.run_id }}
           labels: ${{ steps.meta.outputs.labels }}
