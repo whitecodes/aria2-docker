@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
@@ -107,6 +110,8 @@ func main() {
 			return
 		}
 		fmt.Println("chmod finish")
+
+		sendWebhook(target_file)
 	} else {
 		fmt.Println(source_file + " is empty")
 	}
@@ -144,4 +149,43 @@ func MoveFile(sourcePath, destPath string) error {
 		return fmt.Errorf("Failed removing original file: %s", err)
 	}
 	return nil
+}
+
+// WebhookPayload 发送到 webhook 的数据结构
+type WebhookPayload struct {
+	FileName string `json:"file_name"`
+	Event    string `json:"event"`
+}
+
+func sendWebhook(filePath string) {
+	webhookURL := os.Getenv("WEBHOOK_URL")
+	if webhookURL == "" {
+		fmt.Println("WEBHOOK_URL not set, skip webhook")
+		return
+	}
+
+	// 只取文件名，不要完整路径
+	parts := strings.Split(filePath, "/")
+	fileName := parts[len(parts)-1]
+
+	payload := WebhookPayload{
+		FileName: fileName,
+		Event:    "file_moved",
+	}
+
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		fmt.Println("webhook json marshal error:", err)
+		return
+	}
+
+	fmt.Println("sending webhook to", webhookURL)
+	resp, err := http.Post(webhookURL, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Println("webhook send error:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	fmt.Println("webhook response status:", resp.Status)
 }
