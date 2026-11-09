@@ -1,8 +1,8 @@
 /.dev
 /.idea
 /*.iml
-
 /.git
+/.claude
 /.res
 /examples
 /.editorconfig
@@ -12,3 +12,6 @@
 /CHANGELOG.md
 /LICENSE
 /README.md
+/TODO.md
+/hook
+/hook.go
