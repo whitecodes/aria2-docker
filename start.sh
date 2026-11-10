@@ -29,7 +29,7 @@ caddy run --config "$caddyfile" --adapter=caddyfile &
 caddy_pid=$!
 
 # `caddy run` reports bind/permission errors asynchronously, so give it a moment
-# and bail out when it is already gone (e.g. port 8080 in use).
+# and bail out when it is already gone (e.g. port 8080 already in use).
 sleep 1
 if ! kill -0 "$caddy_pid" 2>/dev/null; then
     echo "error: caddy exited right after startup, see the log above" >&2

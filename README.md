@@ -1,24 +1,23 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/mayswind/AriaNg-Native/master/assets/AriaNg.ico" />
+  <img src="https://raw.githubusercontent.com/binux/yaaw/master/img/favicon.ico" width="48" />
 </p>
 
-# [Aria2](https://github.com/aria2/aria2) + [AriaNg webui](https://github.com/mayswind/AriaNg) inside a [docker container](https://hub.docker.com/r/hurlenko/aria2-ariang)
+# [Aria2](https://github.com/aria2/aria2) + [YAAW webui](https://github.com/binux/yaaw) inside a [docker container](https://github.com/whitecodes/aria2-docker/pkgs/container/aria2-docker)
 
-[![Latest Github release](https://img.shields.io/github/release/hurlenko/aria2-ariang-docker.svg)](https://github.com/hurlenko/aria2-ariang-docker/releases/latest)
-[![Image size](https://img.shields.io/docker/image-size/hurlenko/aria2-ariang/latest)](https://hub.docker.com/r/hurlenko/aria2-ariang/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/hurlenko/aria2-ariang.svg)](https://hub.docker.com/r/hurlenko/aria2-ariang/)
-[![Docker Stars](https://img.shields.io/docker/stars/hurlenko/aria2-ariang.svg)](https://hub.docker.com/r/hurlenko/aria2-ariang/)
+[![Build image](https://github.com/whitecodes/aria2-docker/actions/workflows/dockerimage.yml/badge.svg)](https://github.com/whitecodes/aria2-docker/actions/workflows/dockerimage.yml)
+[![Container image](https://img.shields.io/badge/ghcr.io-whitecodes%2Faria2--docker-blue)](https://github.com/whitecodes/aria2-docker/pkgs/container/aria2-docker)
+[![Base image](https://img.shields.io/badge/base-alpine-blue)](https://hub.docker.com/_/alpine)
 
-- **[Github](https://github.com/hurlenko/aria2-ariang-docker)**
-- **[Dockerhub](https://hub.docker.com/r/hurlenko/aria2-ariang/)**
+- **[Github](https://github.com/whitecodes/aria2-docker)**
+- **[Container image](https://github.com/whitecodes/aria2-docker/pkgs/container/aria2-docker)**
+- Forked from **[hurlenko/aria2-ariang-docker](https://github.com/hurlenko/aria2-ariang-docker)**
 
 ## Introduction
 
-AriaNg is a modern web frontend making [aria2](https://github.com/aria2/aria2) easier to use. AriaNg is written in pure html & javascript, thus it does not need any compilers or runtime environment. You can just put AriaNg in your web server and open it in your browser. AriaNg uses responsive layout, and supports any desktop or mobile devices.
+YAAW ("Yet Another Aria2 Web Frontend") is a web frontend making [aria2](https://github.com/aria2/aria2) easier to use. It is written in pure HTML/CSS/Javascript and needs no HTTP server, backend or server-side program — any browser is enough. Just put it behind a web server and open it.
 
 ## Table of Contents
 
-- [Screenshots](#screenshots)
 - [Demo website](#demo-website)
 - [Features](#features)
 - [Usage](#usage)
@@ -33,24 +32,14 @@ AriaNg is a modern web frontend making [aria2](https://github.com/aria2/aria2) e
   - [User / Group identifiers](#user-/-group-identifiers)
 - [Building](#building)
 
-## Screenshots
-
-### Desktop
-
-![AriaNg](https://raw.githubusercontent.com/mayswind/AriaNg-WebSite/master/screenshots/desktop.png)
-
-### Mobile device
-
-![AriaNg](https://raw.githubusercontent.com/mayswind/AriaNg-WebSite/master/screenshots/mobile.png)
-
 ## Demo website
 
-Please visit [http://ariang.mayswind.net/latest](http://ariang.mayswind.net/latest)
+Please visit [http://binux.github.io/yaaw/demo/](http://binux.github.io/yaaw/demo/)
 
 ## Features
 
 - Configurable via your own `aria2.conf` (mounted at runtime, not baked into the image)
-- Bundled [AriaNg](https://github.com/mayswind/AriaNg) web UI, pinned to a release version (`ARIANG_VERSION` build arg)
+- Bundled [YAAW](https://github.com/binux/yaaw) web UI, pinned to a commit (`YAAW_COMMIT` build arg)
 - Uses the PUID and PGID evironment variables to map the container's internal user to a user on the host machine
 - Supports multiple architectures, tested on Ubuntu 18.04 (`amd64`), Rock64 🍍 (`arm64`) and Raspberry Pi 🍓 (`arm32`)
 
@@ -59,17 +48,19 @@ Please visit [http://ariang.mayswind.net/latest](http://ariang.mayswind.net/late
 ### Docker
 
 ```bash
-mkdir -p ariang-conf
-cp aria2.conf ariang-conf/aria2.conf   # edit to your needs
-touch ariang-conf/aria2.session        # aria2 reads it on startup (input-file)
+mkdir -p aria2-conf
+cp aria2.conf aria2-conf/aria2.conf   # edit to your needs
+touch aria2-conf/aria2.session        # aria2 reads it on startup (input-file)
 
-docker run -d --name ariang \
+docker run -d --name aria2 \
     -p 8080:8080 \
-    -v "$PWD/ariang-conf:/aria2/conf" \
-    hurlenko/aria2-ariang
+    -v "$PWD/aria2-conf:/aria2/conf" \
+    ghcr.io/whitecodes/aria2-docker
 ```
 
 > Note, `aria2.conf` is **not** shipped inside the image: the file in this repository is only a sample. Mount your own copy as shown above — the container exits with an error when `/aria2/conf/aria2.conf` is missing.
+
+> The bundled web UI is [YAAW](https://github.com/binux/yaaw) and its built-in default is `<host>:6800/jsonrpc`, which is not the port this container serves. Open `http://localhost:8080/#path=http://localhost:8080/jsonrpc` once (adjust host/port), or set the `JSON-RPC Path` field in the gear-icon settings dialog. The path is remembered in the browser's local storage.
 
 To run as a different user and to map custom volume locations use:
 
@@ -83,9 +74,7 @@ docker run -d \
     -v /CONFIG_DIR:/aria2/conf \
     -e PUID=1000 \
     -e PGID=1000 \
-    -e ARIA2RPCPORT=443 \
-    -e RPC_SECRET=NOBODYKNOWSME \
-    hurlenko/aria2-ariang
+    ghcr.io/whitecodes/aria2-docker
 ```
 
 > Note, `PUID`/`PGID` are optional: when they are not set the container runs as `root` (`0:0`).
@@ -98,8 +87,8 @@ Minimal `docker-compose.yml` may look like this:
 version: "3"
 
 services:
-  ariang:
-    image: hurlenko/aria2-ariang
+  aria2:
+    image: ghcr.io/whitecodes/aria2-docker
     ports:
       - 443:8080
       - 6881-6999:6881-6999/tcp
@@ -110,8 +99,6 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - RPC_SECRET=secret
-      - ARIA2RPCPORT=443
     restart: always
 ```
 
@@ -129,13 +116,13 @@ The image does **not** ship an `aria2.conf`. The `aria2.conf` found in this repo
 mkdir -p /PATH/TO/CONF
 cp aria2.conf /PATH/TO/CONF/aria2.conf   # then edit it
 touch /PATH/TO/CONF/aria2.session        # required, see below
-docker run -d --name ariang \
+docker run -d --name aria2 \
     -p 8080:8080 \
     -p 6881-6999:6881-6999/tcp \
     -p 6881-6999:6881-6999/udp \
     -v /PATH/TO/CONF:/aria2/conf \
     -v /PATH/TO/DOWNLOADS:/aria2/data \
-    hurlenko/aria2-ariang
+    ghcr.io/whitecodes/aria2-docker
 ```
 
 `start.sh` refuses to start when `/aria2/conf/aria2.conf` is missing, so the mount is mandatory.
@@ -146,7 +133,7 @@ Settings you are most likely to touch:
 
 | Key | Meaning |
 |---|---|
-| `rpc-listen-port` | aria2 RPC port; must match the reverse proxy target in `Caddyfile` (`127.0.0.1:6845` by default) |
+| `rpc-listen-port` | aria2 RPC port; must match the `reverse_proxy` target in `Caddyfile` (`127.0.0.1:6845`). The proxy target is static, so changing this also means editing `Caddyfile` and rebuilding the image |
 | `rpc-listen-all` | listen on all interfaces — keep the RPC endpoint behind the proxy or a secret |
 | `dir` | download directory inside the container (`/aria2/data`) |
 | `input-file` / `save-session` | session file; must already exist inside the mounted config folder (create it with `touch`) |
@@ -167,7 +154,7 @@ The range comes from `listen-port` in `aria2.conf`. IPv6 is enabled by default; 
 
 ### Security (RPC authentication)
 
-**This image ships no authentication of its own.** In the sample `aria2.conf` the RPC endpoint is enabled with `enable-rpc=true` and `rpc-listen-all=true`, and the bundled `Caddyfile` proxies `/jsonrpc` and `/rpc` from port `8080` straight to aria2 (`127.0.0.1:6845`) without any credentials. Anyone who can reach the published port can add, pause and delete downloads, and write files anywhere the container's user can write.
+**This image ships no authentication of its own.** In the sample `aria2.conf` the RPC endpoint is enabled with `enable-rpc=true` and `rpc-listen-all=true`, and the bundled `Caddyfile` proxies `/jsonrpc` and `/rpc` from port `8080` straight to aria2 (`127.0.0.1:6845`, i.e. `rpc-listen-port`) without any credentials. Anyone who can reach the published port can add, pause and delete downloads, and write files anywhere the container's user can write.
 
 Recommended, in order of effectiveness:
 
@@ -180,7 +167,7 @@ Recommended, in order of effectiveness:
    ```
    rpc-secret=CHANGE_ME
    ```
-   Every RPC call then has to carry `token:CHANGE_ME`. The bundled web UI is [AriaNg](https://github.com/mayswind/AriaNg), which supports the secret: set it once in `AriaNg Settings` > `RPC` > `Secret` (and keep the RPC URL on `/jsonrpc`).
+   Every RPC call then has to carry `token:CHANGE_ME`. The bundled web UI is [YAAW](https://github.com/binux/yaaw), which supports the secret through the userinfo part of the RPC path: set `JSON-RPC Path` (gear icon) to `http://token:CHANGE_ME@your.host/jsonrpc`.
 
 Also consider `rpc-allow-origin-all=false` (the sample enables it) to stop arbitrary websites from calling the RPC endpoint through a browser.
 
@@ -211,7 +198,8 @@ location / {
 
 - `PUID` - Userid who will own all downloaded files and configuration files (Default `0` which is root)
 - `PGID` - Groupid who will own all downloaded files and configuration files (Default `0` which is root)
-- `ARIA2RPCPORT` - The port that will be used for rpc calls to aria2. Usually you want to set it to the port your website is running on. For example if your AriaNg instance is accessible on `https://ariang.mysite.com` you need to set `ARIA2RPCPORT` to `443` (default https port), otherwise AriaNg won't be able to access aria2 rpc running on the default port `8080`. You can set the port in the web ui by going to `AriaNg Settings` > `Rpc` tab > `Aria2 RPC Address` field, and changing the default rpc port to whatever you need, but this has to be done per browser.
+
+> Note, **ports are not configurable through environment variables** (the upstream `ARIA2RPCPORT` is gone: if your run command or compose file still sets it, delete it). The web UI always listens on `8080` inside the container — publish it on any host port with `-p 443:8080`. aria2's RPC port comes from `rpc-listen-port` in your `aria2.conf` and must match the `reverse_proxy` target in `Caddyfile` (`127.0.0.1:6845`), which is fixed at build time.
 
 > Note, RPC authentication is **not** configured through environment variables; see [Security (RPC authentication)](#security-rpc-authentication).
 
@@ -236,7 +224,7 @@ id username
 ## Building
 
 ```bash
-git clone https://github.com/hurlenko/aria2-ariang-docker
-cd aria2-ariang-docker
-docker build -t hurlenko/aria2-ariang .
+git clone https://github.com/whitecodes/aria2-docker
+cd aria2-docker
+docker build -t ghcr.io/whitecodes/aria2-docker .
 ```
